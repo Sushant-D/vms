@@ -667,7 +667,7 @@
     <div class="container">
       <div class="footer-content">
         <div class="footer-info">
-          <h3>VolunteerHub</h3>
+          <h3>VoluniFy</h3>
           <p>The complete volunteer management solution for nonprofits, schools, and corporations. Simplify recruitment, engagement, and impact measurement.</p>
         </div>
         <div class="footer-links">
