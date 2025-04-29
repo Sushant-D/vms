@@ -27,8 +27,6 @@ public class HomeController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-//		response.getWriter().append("Served at: ").append(request.getContextPath());
-//		request.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(request, response);
 		String uri = request.getRequestURI();
         String contextPath = request.getContextPath();
         String page = uri.substring(contextPath.length());
