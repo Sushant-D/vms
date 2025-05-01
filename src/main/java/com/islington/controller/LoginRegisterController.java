@@ -157,8 +157,11 @@ public class LoginRegisterController extends HttpServlet {
                 // Redirect based on user role
                 if ("admin".equals(user.getUserRole())) {
                     response.sendRedirect(request.getContextPath() + "/admin-dashboard");
-                } else {
+                } else if ("volunteer".equals(user.getUserRole())) {
                     response.sendRedirect(request.getContextPath() + "/user-dashboard");
+                } else {
+                    // For any other role, redirect to home page
+                    response.sendRedirect(request.getContextPath() + "/");
                 }
             } else {
                 // Login failed

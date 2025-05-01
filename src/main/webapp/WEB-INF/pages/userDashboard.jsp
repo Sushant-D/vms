@@ -1,18 +1,29 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.islington.model.User" %>
 <%
+    // Check if user is logged in - this is now redundant because of HomeController check,
+    // but keeping it for additional security layer
     if (session == null || session.getAttribute("user") == null) {
-        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
+    
+    // Get user from session
     User user = (User) session.getAttribute("user");
+    
+    // Check if user has volunteer role - this is now redundant because of HomeController check,
+    // but keeping it for additional security layer
+    if (!"volunteer".equals(user.getUserRole())) {
+        response.sendRedirect(request.getContextPath() + "/access-denied.jsp");
+        return;
+    }
 %>
 
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>User Dashboard</title>
+    <title>Volunteer Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -104,17 +115,27 @@
             font-size: 18px;
             cursor: pointer;
         }
+        
+        .welcome-message {
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            margin: 0 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>User Dashboard</h1>
+            <h1>Volunteer Dashboard</h1>
+        </div>
+        
+        <div class="welcome-message">
+            <p>Welcome, <%= user.getFirstName() %> <%= user.getLastName() %>!</p>
         </div>
         
         <div class="navbar">
-            <a href="#">Dashboard</a>
-            <a href="#">Available Events</a>
+            <a href="<%= request.getContextPath() %>/user-dashboard">Dashboard</a>
+            <a href="<%= request.getContextPath() %>/apply-volunteer">Available Events</a>
             <a href="#">My Applications</a>
             <a href="#">Profile</a>
             <a href="<%= request.getContextPath() %>/logout">Logout</a>
@@ -144,7 +165,7 @@
                     <p>Date: May 15, 2025 | Location: City Park</p>
                     <p>Volunteers needed: 10</p>
                 </div>
-                <button class="apply-btn">Apply</button>
+                <button class="apply-btn" onclick="location.href='<%= request.getContextPath() %>/apply-volunteer?eventId=1'">Apply</button>
             </div>
             
             <div class="event-card">
@@ -153,7 +174,7 @@
                     <p>Date: June 1, 2025 | Location: Community Center</p>
                     <p>Volunteers needed: 8</p>
                 </div>
-                <button class="apply-btn">Apply</button>
+                <button class="apply-btn" onclick="location.href='<%= request.getContextPath() %>/apply-volunteer?eventId=2'">Apply</button>
             </div>
         </div>
     </div>
