@@ -1,0 +1,182 @@
+package com.islington.controller;
+
+import java.io.IOException;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import jakarta.servlet.ServletException;	
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import com.islington.model.Event;
+import com.islington.service.EventService;
+
+@WebServlet(urlPatterns = {"/addEvent", "/editEvent", "/saveEvent", "/deleteEvent", "/listEvents"})
+public class EventController extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    
+    private EventService eventService;
+    
+    public EventController() {
+        super();
+        eventService = new EventService();
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        String action = request.getServletPath();
+        
+        switch (action) {
+            case "/addEvent":
+                showAddEventForm(request, response);
+                break;
+            case "/editEvent":
+                showEditEventForm(request, response);
+                break;
+            case "/deleteEvent":
+                deleteEvent(request, response);
+                break;
+            case "/listEvents":
+                listEvents(request, response);
+                break;
+            default:
+                listEvents(request, response);
+                break;
+        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        String action = request.getServletPath();
+        
+        if ("/saveEvent".equals(action)) {
+            saveEvent(request, response);
+        } else {
+            doGet(request, response);
+        }
+    }
+    
+    private void showAddEventForm(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        // Just forward to the addEvent.jsp page
+        request.getRequestDispatcher("/WEB-INF/pages/addEvent.jsp").forward(request, response);
+    }
+    
+    private void showEditEventForm(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        try {
+            int eventId = Integer.parseInt(request.getParameter("id"));
+            Event event = eventService.getEventById(eventId);
+            
+            if (event != null) {
+                request.setAttribute("event", event);
+                request.getRequestDispatcher("/WEB-INF/pages/addEvent.jsp").forward(request, response);
+            } else {
+                request.setAttribute("errorMessage", "Event not found");
+                listEvents(request, response);
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("errorMessage", "Invalid event ID");
+            listEvents(request, response);
+        } catch (ClassNotFoundException e) {
+            request.setAttribute("errorMessage", "Database connection error: " + e.getMessage());
+            request.getRequestDispatcher("/WEB-INF/pages/error.jsp").forward(request, response);
+        }
+    }
+    
+    private void saveEvent(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        try {
+            // Check if we're updating an existing event or creating a new one
+            String eventIdParam = request.getParameter("eventId");
+            boolean isUpdate = eventIdParam != null && !eventIdParam.isEmpty();
+            
+            Event event;
+            if (isUpdate) {
+                int eventId = Integer.parseInt(eventIdParam);
+                event = eventService.getEventById(eventId);
+                if (event == null) {
+                    throw new IllegalArgumentException("Event not found");
+                }
+            } else {
+                event = new Event();
+            }
+            
+            // Set event properties from form data
+            event.setEventName(request.getParameter("eventName"));
+            event.setLocation(request.getParameter("location"));
+            event.setDescription(request.getParameter("description"));
+            
+            // Handle the date
+            String eventDateParam = request.getParameter("eventDate");
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            java.util.Date parsedDate = format.parse(eventDateParam);
+            event.setEventDate(new Date(parsedDate.getTime()));
+            
+            // Handle volunteers needed
+            int volunteersNeeded = Integer.parseInt(request.getParameter("volunteersNeeded"));
+            event.setVolunteersNeeded(volunteersNeeded);
+            
+            // Save to database
+            boolean success;
+            if (isUpdate) {
+                success = eventService.updateEvent(event);
+            } else {
+                success = eventService.createEvent(event);
+            }
+            
+            if (success) {
+                request.setAttribute("successMessage", isUpdate ? "Event updated successfully" : "Event created successfully");
+            } else {
+                request.setAttribute("errorMessage", "Failed to " + (isUpdate ? "update" : "create") + " event");
+            }
+            
+            // Redirect to event list
+            listEvents(request, response);
+            
+        } catch (ParseException | IllegalArgumentException e) {
+            request.setAttribute("errorMessage", "Error processing form: " + e.getMessage());
+            request.getRequestDispatcher("/WEB-INF/pages/addEvent.jsp").forward(request, response);
+        } catch (ClassNotFoundException e) {
+            request.setAttribute("errorMessage", "Database connection error: " + e.getMessage());
+            request.getRequestDispatcher("/WEB-INF/pages/error.jsp").forward(request, response);
+        }
+    }
+    
+    private void deleteEvent(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        try {
+            int eventId = Integer.parseInt(request.getParameter("id"));
+            boolean success = eventService.deleteEvent(eventId);
+            
+            if (success) {
+                request.setAttribute("successMessage", "Event deleted successfully");
+            } else {
+                request.setAttribute("errorMessage", "Failed to delete event");
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("errorMessage", "Invalid event ID");
+        } catch (ClassNotFoundException e) {
+            request.setAttribute("errorMessage", "Database connection error: " + e.getMessage());
+            request.getRequestDispatcher("/WEB-INF/pages/error.jsp").forward(request, response);
+            return; // Important: return to prevent the listEvents call below
+        }
+        
+        listEvents(request, response);
+    }
+    
+    private void listEvents(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        try {
+            request.setAttribute("events", eventService.getAllEvents());
+            request.getRequestDispatcher("/WEB-INF/pages/eventList.jsp").forward(request, response);
+        } catch (ClassNotFoundException e) {
+            request.setAttribute("errorMessage", "Database connection error: " + e.getMessage());
+            request.getRequestDispatcher("/WEB-INF/pages/error.jsp").forward(request, response);
+        }
+    }
+}

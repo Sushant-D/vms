@@ -13,7 +13,7 @@ import com.islington.model.User;
 /**
  * @author Sushant Dhungel
  */
-@WebServlet(asyncSupported = true, urlPatterns = { "/login", "/", "/register", "/admin-dashboard", "/user-dashboard", "/add-event", "/apply-volunteer", "/access-denied" })
+@WebServlet(asyncSupported = true, urlPatterns = { "/login", "/", "/register", "/admin-dashboard", "/user-dashboard", "/add-event", "/apply-volunteer", "/access-denied", "/features", "/contact", "/privacy-policy", "/blogs", "/volunteers" })
 public class HomeController extends HttpServlet {
     private static final long serialVersionUID = 1L;
        
@@ -46,9 +46,26 @@ public class HomeController extends HttpServlet {
         // Public pages
         else if (page.equals("/home") || page.equals("/")) {
             request.getRequestDispatcher("/WEB-INF/pages/home.jsp").forward(request, response);
-        } else if (page.equals("/login")) {
+        } 
+        else if (page.equals("/features")) {
+            request.getRequestDispatcher("/WEB-INF/pages/features.jsp").forward(request, response);
+        }
+        else if (page.equals("/volunteers")) {
+            request.getRequestDispatcher("/WEB-INF/pages/volunteers.jsp").forward(request, response);
+        }
+        else if (page.equals("/privacy-policy")) {
+            request.getRequestDispatcher("/WEB-INF/pages/privacy-policy.jsp").forward(request, response);
+        } 
+        else if (page.equals("/blogs")) {
+            request.getRequestDispatcher("/WEB-INF/pages/blogs.jsp").forward(request, response);
+        } 
+        else if (page.equals("/contact")) {
+            request.getRequestDispatcher("/WEB-INF/pages/contact.jsp").forward(request, response);
+        } 
+        else if (page.equals("/login")) {
             request.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(request, response);
-        } else if (page.equals("/register")) {
+        } 
+        else if (page.equals("/register")) {
             request.getRequestDispatcher("/WEB-INF/pages/register.jsp").forward(request, response);
         } else {
             // Handle unknown pages
