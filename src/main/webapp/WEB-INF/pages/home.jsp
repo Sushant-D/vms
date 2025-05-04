@@ -485,14 +485,14 @@
   <header>
     <div class="container">
       <nav>
-        <div class="logo">Voluni<span>Fy</span></div>
+        <div class="logo"><a href="${pageContext.request.contextPath}/">Voluni<span>Fy</span></a></div>
         <ul class="nav-links">
-          <li><a href="#">Features</a></li>
-          <li><a href="#">Nonprofits</a></li>
-          <li><a href="#">Volunteers</a></li>
-          <li><a href="#">Schools</a></li>
-          <li><a href="#">Companies</a></li>
-          <li><a href="#">Pricing</a></li>
+          <li><a href="${pageContext.request.contextPath}/features">Features</a></li>
+          <li><a href="${pageContext.request.contextPath}/nonprofits">Nonprofits</a></li>
+          <li><a href="${pageContext.request.contextPath}/volunteers">Volunteers</a></li>
+          <!-- <li><a href="#">Schools</a></li> -->
+          <li><a href="${pageContext.request.contextPath}/contact">Contact</a></li> 
+          <li><a href="${pageContext.request.contextPath}/princing">Pricing</a></li>
         </ul>
         <div class="auth-buttons">
           <a href="${pageContext.request.contextPath}/login" class="btn btn-outline">Log In</a>
