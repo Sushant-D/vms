@@ -13,7 +13,7 @@ import com.islington.model.User;
 /**
  * @author Sushant Dhungel
  */
-@WebServlet(asyncSupported = true, urlPatterns = { "/login", "/", "/register", "/admin-dashboard", "/user-dashboard", "/add-event", "/apply-volunteer", "/access-denied", "/features", "/contact", "/privacy-policy", "/blogs", "/volunteers" })
+@WebServlet(asyncSupported = true, urlPatterns = { "/login", "/", "/register", "/admin-dashboard", "/user-dashboard", "/add-event", "/apply-volunteer", "/access-denied", "/features", "/contact", "/privacy-policy", "/blogs", "/volunteers", "/pricing", "/nonprofits" })
 public class HomeController extends HttpServlet {
     private static final long serialVersionUID = 1L;
        
@@ -46,7 +46,13 @@ public class HomeController extends HttpServlet {
         // Public pages
         else if (page.equals("/home") || page.equals("/")) {
             request.getRequestDispatcher("/WEB-INF/pages/home.jsp").forward(request, response);
-        } 
+        }
+        else if (page.equals("/pricing")) {
+            request.getRequestDispatcher("/WEB-INF/pages/pricing.jsp").forward(request, response);
+        }
+        else if (page.equals("/nonprofits")) {
+            request.getRequestDispatcher("/WEB-INF/pages/nonprofits.jsp").forward(request, response);
+        }
         else if (page.equals("/features")) {
             request.getRequestDispatcher("/WEB-INF/pages/features.jsp").forward(request, response);
         }
