@@ -553,8 +553,8 @@
       <div class="locations-grid">
         <div class="location-card">
           <div class="location-icon">🏙️</div>
-          <h3>San Francisco</h3>
-          <p>123 Volunteer Way, Suite 200<br>San Francisco, CA 94107<br>United States</p>
+          <h3>Kathmandu</h3>
+          <p>Kamalpokhari<br>Bagmati, NP 44600<br>Nepal</p>
           <a href="#" class="btn btn-outline">View on Map</a>
         </div>
         <div class="location-card">
