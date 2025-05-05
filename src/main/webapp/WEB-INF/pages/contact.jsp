@@ -453,14 +453,14 @@
             <div class="contact-icon">📍</div>
             <div class="contact-details">
               <h3>Our Address</h3>
-              <p>123 Volunteer Way, Suite 200<br>San Francisco, CA 94107</p>
+              <p>Kamalpokhari, Kathmandu<br>Bagmati, NP 44600</p>
             </div>
           </div>
           <div class="contact-info-item">
             <div class="contact-icon">📱</div>
             <div class="contact-details">
               <h3>Phone</h3>
-              <p>+1 (800) 123-4567</p>
+              <p>+977 9840287978</p>
             </div>
           </div>
           <div class="contact-info-item">
