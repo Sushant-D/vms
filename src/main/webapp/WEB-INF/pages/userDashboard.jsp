@@ -140,43 +140,37 @@
             <a href="#">Profile</a>
             <a href="<%= request.getContextPath() %>/logout">Logout</a>
         </div>
-        
+        <div style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px 20px; margin: 20px; border-radius: 5px;">
+    Your application for <strong>Blood Donation Camp</strong> as a volunteer has been <strong>approved</strong> by Admin. Be prepared for <strong>May 30, 2025</strong>. Congratulations!
+</div>
         <div class="stats-container">
             <div class="stat-box">
-                <p class="stat-number">5</p>
+                <p class="stat-number">1</p>
                 <p class="stat-label">Total Events</p>
             </div>
             <div class="stat-box">
-                <p class="stat-number">3</p>
+                <p class="stat-number">1</p>
                 <p class="stat-label">Applied Events</p>
             </div>
             <div class="stat-box">
-                <p class="stat-number">2</p>
+                <p class="stat-number">1</p>
                 <p class="stat-label">Approved</p>
             </div>
         </div>
         
-        <div class="events-section">
-            <div class="section-title">Available Events</div>
-            
-            <div class="event-card">
-                <div class="event-details">
-                    <h2>Community Cleanup</h2>
-                    <p>Date: May 15, 2025 | Location: City Park</p>
-                    <p>Volunteers needed: 10</p>
-                </div>
-                <button class="apply-btn" onclick="location.href='<%= request.getContextPath() %>/apply-volunteer?eventId=1'">Apply</button>
-            </div>
-            
-            <div class="event-card">
-                <div class="event-details">
-                    <h2>Food Drive</h2>
-                    <p>Date: June 1, 2025 | Location: Community Center</p>
-                    <p>Volunteers needed: 8</p>
-                </div>
-                <button class="apply-btn" onclick="location.href='<%= request.getContextPath() %>/apply-volunteer?eventId=2'">Apply</button>
-            </div>
+
+       <div class="events-section">
+    <div class="section-title">Available Events (1)</div>
+    
+    <div class="event-card">
+        <div class="event-details">
+            <h2>Blood Donation Camp</h2>
+            <p>Date: May 30, 2025 | Location: Community Hall</p>
+            <p>Volunteers needed: 10</p>
         </div>
+        <button class="apply-btn" onclick="location.href='<%= request.getContextPath() %>/apply-volunteer?eventId=1'">Applied</button>
+    </div>
+</div>
     </div>
 </body>
 </html>
