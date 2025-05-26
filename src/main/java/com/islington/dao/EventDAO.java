@@ -12,7 +12,7 @@ import java.util.List;
 public class EventDAO {
     
     public boolean saveEvent(Event event) {
-        String sql = "INSERT INTO events (CreatedByUserID, DateCreated, EventName, EventDate, " +
+        String sql = "INSERT INTO event (CreatedByUserID, DateCreated, EventName, EventDate, " +
                     "EventLocation, EventDescription, StartTime, EndTime, VolunteersNeeded, " +
                     "VolunteersApplied, VolunteersApproved, EventStatus, EventCategory) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -56,7 +56,7 @@ public class EventDAO {
     }
     
     public boolean updateEvent(Event event) {
-        String sql = "UPDATE events SET LastModifiedByUserID = ?, LastModifiedDate = ?, " +
+        String sql = "UPDATE event SET LastModifiedByUserID = ?, LastModifiedDate = ?, " +
                     "EventName = ?, EventDate = ?, EventLocation = ?, EventDescription = ?, " +
                     "StartTime = ?, EndTime = ?, VolunteersNeeded = ?, EventStatus = ?, " +
                     "EventCategory = ? WHERE EventID = ?";
