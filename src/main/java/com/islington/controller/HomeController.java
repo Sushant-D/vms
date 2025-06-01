@@ -28,7 +28,9 @@ public class HomeController extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+    	System.out.println("Requested URI: " + request.getRequestURI());
+    	System.out.println("Context Path: " + request.getContextPath());
+//    	System.out.println("Page: " + uri.substring(contextPath.length()));
         String uri = request.getRequestURI();
         String contextPath = request.getContextPath();
         String page = uri.substring(contextPath.length());

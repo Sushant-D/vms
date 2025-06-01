@@ -20,19 +20,21 @@ import com.islington.service.EventService;
 /**
  * @author Sushant Dhungel
  */
-
+//@WebServlet("/saveEvent")
 public class EventController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private EventService eventService;
     
     public EventController() {
+   
         super();
         eventService = new EventService();
     }
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        
+    	System.out.println("SaveEventServlet doPost called!");
+        System.out.println("Request Method: " + request.getMethod());
         // Check if user is logged in and is admin
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {

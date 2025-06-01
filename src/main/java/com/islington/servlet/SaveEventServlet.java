@@ -13,7 +13,9 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 
 @WebServlet("/saveEvent")
 public class SaveEventServlet extends HttpServlet {
@@ -21,22 +23,32 @@ public class SaveEventServlet extends HttpServlet {
     
     @Override
     public void init() throws ServletException {
+    	System.out.println("here");
         eventDAO = new EventDAO();
     }
     
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        System.out.println("=== SaveEvent Servlet Debug ===");
         
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        
         if (user == null) {
+            System.out.println("User not logged in");
             response.sendRedirect("login.jsp");
             return;
         }
-        Integer userId = user.getUserId();
         
         try {
+            // Debug: Print all parameters
+            System.out.println("Form parameters received:");
+            request.getParameterMap().forEach((key, values) -> {
+                System.out.println("- " + key + ": " + Arrays.toString(values));
+            });
+            
             // Get form parameters
             String eventIdParam = request.getParameter("eventId");
             String eventName = request.getParameter("eventName");
@@ -49,134 +61,152 @@ public class SaveEventServlet extends HttpServlet {
             String eventCategory = request.getParameter("eventCategory");
             String eventStatus = request.getParameter("eventStatus");
             
+            System.out.println("Processing parameters:");
+            System.out.println("- eventId: " + eventIdParam);
+            System.out.println("- eventName: " + eventName);
+            System.out.println("- eventDate: " + eventDateStr);
+            System.out.println("- location: " + location);
+            System.out.println("- volunteersNeeded: " + volunteersNeededStr);
+            System.out.println("- startTime: " + startTimeStr);
+            System.out.println("- endTime: " + endTimeStr);
+            System.out.println("- eventCategory: " + eventCategory);
+            System.out.println("- eventStatus: " + eventStatus);
+            
             // Validate required fields
-            if (eventName == null || eventName.trim().isEmpty() ||
-                eventDateStr == null || eventDateStr.trim().isEmpty() ||
-                location == null || location.trim().isEmpty() ||
-                description == null || description.trim().isEmpty() ||
-                volunteersNeededStr == null || volunteersNeededStr.trim().isEmpty()) {
-                
-                request.setAttribute("errorMessage", "All required fields must be filled.");
-                request.getRequestDispatcher("addEvent.jsp").forward(request, response);
+            if (eventName == null || eventName.trim().isEmpty()) {
+                System.out.println("Event name is missing");
+                response.sendRedirect("addEvent.jsp?error=missing_event_name");
                 return;
             }
             
-            // Parse and validate data
-            LocalDate eventDate = LocalDate.parse(eventDateStr);
-            int volunteersNeeded = Integer.parseInt(volunteersNeededStr);
-            
-            if (volunteersNeeded <= 0) {
-                request.setAttribute("errorMessage", "Volunteers needed must be a positive number.");
-                request.getRequestDispatcher("addEvent.jsp").forward(request, response);
+            if (eventDateStr == null || eventDateStr.trim().isEmpty()) {
+                System.out.println("Event date is missing");
+                response.sendRedirect("addEvent.jsp?error=missing_event_date");
                 return;
             }
             
-            // Check if event date is in the future
-            if (eventDate.isBefore(LocalDate.now())) {
-                request.setAttribute("errorMessage", "Event date must be in the future.");
-                request.getRequestDispatcher("addEvent.jsp").forward(request, response);
+            if (location == null || location.trim().isEmpty()) {
+                System.out.println("Event location is missing");
+                response.sendRedirect("addEvent.jsp?error=missing_location");
+                return;
+            }
+            
+            if (description == null || description.trim().isEmpty()) {
+                System.out.println("Event description is missing");
+                response.sendRedirect("addEvent.jsp?error=missing_description");
+                return;
+            }
+            
+            if (volunteersNeededStr == null || volunteersNeededStr.trim().isEmpty()) {
+                System.out.println("Volunteers needed is missing");
+                response.sendRedirect("addEvent.jsp?error=missing_volunteers_needed");
                 return;
             }
             
             // Create Event object
             Event event = new Event();
-            event.setEventName(eventName.trim());
-            event.setEventDate(eventDate);
-            event.setEventLocation(location.trim());
-            event.setEventDescription(description.trim());
-            event.setVolunteersNeeded(volunteersNeeded);
             
-            // Parse optional time fields
-            if (startTimeStr != null && !startTimeStr.trim().isEmpty()) {
-                try {
+            try {
+                // Set basic fields
+                event.setEventName(eventName.trim());
+                event.setEventDate(LocalDate.parse(eventDateStr));
+                event.setEventLocation(location.trim());
+                event.setEventDescription(description.trim());
+                event.setVolunteersNeeded(Integer.parseInt(volunteersNeededStr));
+                
+                // Set optional time fields
+                if (startTimeStr != null && !startTimeStr.trim().isEmpty()) {
                     event.setStartTime(LocalTime.parse(startTimeStr));
-                } catch (DateTimeParseException e) {
-                    request.setAttribute("errorMessage", "Invalid start time format.");
-                    request.getRequestDispatcher("addEvent.jsp").forward(request, response);
-                    return;
+                    System.out.println("Start time set: " + startTimeStr);
                 }
-            }
-            
-            if (endTimeStr != null && !endTimeStr.trim().isEmpty()) {
-                try {
+                
+                if (endTimeStr != null && !endTimeStr.trim().isEmpty()) {
                     event.setEndTime(LocalTime.parse(endTimeStr));
-                } catch (DateTimeParseException e) {
-                    request.setAttribute("errorMessage", "Invalid end time format.");
-                    request.getRequestDispatcher("addEvent.jsp").forward(request, response);
-                    return;
+                    System.out.println("End time set: " + endTimeStr);
                 }
-            }
-            
-            // Validate start time is before end time if both are provided
-            if (event.getStartTime() != null && event.getEndTime() != null) {
-                if (event.getStartTime().isAfter(event.getEndTime())) {
-                    request.setAttribute("errorMessage", "Start time must be before end time.");
-                    request.getRequestDispatcher("addEvent.jsp").forward(request, response);
-                    return;
+                
+                // Set category and status
+                if (eventCategory != null && !eventCategory.trim().isEmpty()) {
+                    event.setEventCategory(eventCategory.trim());
+                } else {
+                    event.setEventCategory("Other"); // Default category
                 }
+                
+                if (eventStatus != null && !eventStatus.trim().isEmpty()) {
+                    event.setEventStatus(eventStatus.trim());
+                } else {
+                    event.setEventStatus("upcoming"); // Default status
+                }
+                
+                System.out.println("Event object created successfully");
+                
+            } catch (Exception e) {
+                System.out.println("Error creating Event object: " + e.getMessage());
+                e.printStackTrace();
+                response.sendRedirect("addEvent.jsp?error=invalid_data_format");
+                return;
             }
             
-            // Set optional fields
-            if (eventCategory != null && !eventCategory.trim().isEmpty()) {
-                event.setEventCategory(eventCategory.trim());
-            }
-            
-            if (eventStatus != null && !eventStatus.trim().isEmpty()) {
-                event.setEventStatus(eventStatus.trim());
-            } else {
-                event.setEventStatus("upcoming"); // Default status
-            }
-            
-            boolean success;
-            String successMessage;
+            boolean success = false;
             
             // Check if this is an update or create operation
             if (eventIdParam != null && !eventIdParam.trim().isEmpty()) {
-                // Update existing event
-                int eventId = Integer.parseInt(eventIdParam);
-                event.setEventId(eventId);
-                event.setLastModifiedByUserId(userId);
-                
-                success = eventDAO.updateEvent(event);
-                successMessage = "Event updated successfully!";
-            } else {
-                // Create new event
-                event.setCreatedByUserId(userId);
+                // UPDATE operation
+                System.out.println("Performing UPDATE operation");
                 try {
-                    success = eventDAO.saveEvent(event);
-                } catch (Exception daoEx) {
-                    daoEx.printStackTrace();
-                    throw new ServletException("Database error", daoEx);
+                    int eventId = Integer.parseInt(eventIdParam);
+                    event.setEventId(eventId);
+                    event.setLastModifiedByUserId(user.getUserId());
+                    
+                    System.out.println("About to call updateEvent with ID: " + eventId);
+                    System.out.println("Event details before update:");
+                    System.out.println("- Name: " + event.getEventName());
+                    System.out.println("- Date: " + event.getEventDate());
+                    System.out.println("- Location: " + event.getEventLocation());
+                    System.out.println("- Modified by: " + event.getLastModifiedByUserId());
+                    
+                    success = eventDAO.updateEvent(event);
+                    System.out.println("Update result: " + success);
+                    
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid event ID format: " + eventIdParam);
+                    response.sendRedirect("addEvent.jsp?error=invalid_event_id");
+                    return;
                 }
+            } else {
+                // CREATE operation
+                System.out.println("Performing CREATE operation");
+                event.setCreatedByUserId(user.getUserId());
+                event.setDateCreated(LocalDateTime.now());
+                event.setVolunteersApplied(0);
+                event.setVolunteersApproved(0);
+                
+                System.out.println("About to call saveEvent");
                 success = eventDAO.saveEvent(event);
-                successMessage = "Event created successfully!";
+                System.out.println("Create result: " + success);
             }
             
             if (success) {
-                request.setAttribute("successMessage", successMessage);
-                response.sendRedirect("adminDashboard.jsp?success=true");
+                System.out.println("Operation successful, redirecting to dashboard");
+                response.sendRedirect("admin-dashboard?success=event_saved");
             } else {
-                request.setAttribute("errorMessage", "Failed to save event. Please try again.");
-                request.getRequestDispatcher("addEvent.jsp").forward(request, response);
+                System.out.println("Operation failed, redirecting with error");
+                response.sendRedirect("addEvent.jsp?error=save_failed");
             }
             
-        } catch (NumberFormatException e) {
-            request.setAttribute("errorMessage", "Invalid number format for volunteers needed.");
-            request.getRequestDispatcher("addEvent.jsp").forward(request, response);
-        } catch (DateTimeParseException e) {
-            request.setAttribute("errorMessage", "Invalid date format. Please use YYYY-MM-DD format.");
-            request.getRequestDispatcher("addEvent.jsp").forward(request, response);
         } catch (Exception e) {
+            System.out.println("Unexpected error in SaveEventServlet: " + e.getMessage());
             e.printStackTrace();
-            request.setAttribute("errorMessage", "An unexpected error occurred. Please try again.");
-            request.getRequestDispatcher("addEvent.jsp").forward(request, response);
+            response.sendRedirect("addEvent.jsp?error=unexpected_error");
         }
+        
+        System.out.println("=== End SaveEvent Servlet Debug ===");
     }
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        // Redirect GET requests to the form
-        response.sendRedirect("addEvent.jsp");
+        // For GET requests, forward to the form page
+        request.getRequestDispatcher("addEvent.jsp").forward(request, response);
     }
 }
