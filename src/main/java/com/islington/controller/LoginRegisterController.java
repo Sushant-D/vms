@@ -134,6 +134,10 @@ public class LoginRegisterController extends HttpServlet {
         
         // Get form parameters
         String email = request.getParameter("email");
+        System.out.println("DEBUG - Email: " + email);
+        
+        // Exit here for debugging
+//        return;
         String password = request.getParameter("password");
         
         // Validate inputs
