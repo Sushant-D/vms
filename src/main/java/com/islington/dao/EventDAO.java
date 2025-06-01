@@ -56,49 +56,56 @@ public class EventDAO {
     }
     
     public boolean updateEvent(Event event) {
-        String sql = "UPDATE event SET LastModifiedByUserID = ?, LastModifiedDate = ?, " +
-                    "EventName = ?, EventDate = ?, EventLocation = ?, EventDescription = ?, " +
-                    "StartTime = ?, EndTime = ?, VolunteersNeeded = ?, EventStatus = ?, " +
-                    "EventCategory = ? WHERE EventID = ?";
+        String sql = "UPDATE event SET EventName = ?, EventDate = ?, EventLocation = ?, " +
+                "EventDescription = ?, VolunteersNeeded = ?, StartTime = ?, EndTime = ?, " +
+                "EventCategory = ?, EventStatus = ?, LastModifiedByUserID = ?, LastModifiedDate = ? " +
+                "WHERE EventID = ?";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setInt(1, event.getLastModifiedByUserId());
-            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
-            stmt.setString(3, event.getEventName());
-            stmt.setDate(4, Date.valueOf(event.getEventDate()));
-            stmt.setString(5, event.getEventLocation());
-            stmt.setString(6, event.getEventDescription());
+            // Set parameters in the correct order matching the SQL
+            stmt.setString(1, event.getEventName());                    // EventName
+            stmt.setDate(2, Date.valueOf(event.getEventDate()));        // EventDate
+            stmt.setString(3, event.getEventLocation());               // EventLocation
+            stmt.setString(4, event.getEventDescription());            // EventDescription
+            stmt.setInt(5, event.getVolunteersNeeded());               // VolunteersNeeded
             
+            // Handle optional time fields
             if (event.getStartTime() != null) {
-                stmt.setTime(7, Time.valueOf(event.getStartTime()));
+                stmt.setTime(6, Time.valueOf(event.getStartTime()));   // StartTime
+            } else {
+                stmt.setNull(6, Types.TIME);
+            }
+            
+            if (event.getEndTime() != null) {
+                stmt.setTime(7, Time.valueOf(event.getEndTime()));     // EndTime
             } else {
                 stmt.setNull(7, Types.TIME);
             }
             
-            if (event.getEndTime() != null) {
-                stmt.setTime(8, Time.valueOf(event.getEndTime()));
-            } else {
-                stmt.setNull(8, Types.TIME);
-            }
-            
-            stmt.setInt(9, event.getVolunteersNeeded());
-            stmt.setString(10, event.getEventStatus());
-            stmt.setString(11, event.getEventCategory());
-            stmt.setInt(12, event.getEventId());
+            stmt.setString(8, event.getEventCategory());               // EventCategory
+            stmt.setString(9, event.getEventStatus());                // EventStatus
+            stmt.setInt(10, event.getLastModifiedByUserId());          // LastModifiedByUserID
+            stmt.setTimestamp(11, Timestamp.valueOf(LocalDateTime.now())); // LastModifiedDate
+            stmt.setInt(12, event.getEventId());                       // WHERE EventID = ?
             
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
             
         } catch (SQLException | ClassNotFoundException e) {
+            System.out.println("Error updating event: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
     
     public Event getEventById(int eventId) {
-        String sql = "SELECT * FROM events WHERE EventID = ?";
+    	System.out.println("=== getEventById Debug ===");
+        System.out.println("Looking for event ID: " + eventId);
+        
+        String sql = "SELECT * FROM event WHERE EventID = ?";
+        System.out.println("SQL Query: " + sql);
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -107,7 +114,130 @@ public class EventDAO {
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
-                return mapResultSetToEvent(rs);
+                System.out.println("Event found! Building Event object...");
+                
+                Event event = new Event();
+                
+                // Debug each field as we retrieve it
+                int id = rs.getInt("EventID");
+                System.out.println("- event_id: " + id);
+                event.setEventId(id);
+                
+                String name = rs.getString("EventName");
+                System.out.println("- event_name: " + name);
+                event.setEventName(name);
+                
+                // Check if event_date column exists and handle it
+                try {
+                    Date eventDate = rs.getDate("EventDate");
+                    System.out.println("- event_date: " + eventDate);
+                    if (eventDate != null) {
+                        event.setEventDate(eventDate.toLocalDate());
+                    }
+                } catch (SQLException e) {
+                    System.out.println("- event_date column issue: " + e.getMessage());
+                }
+                
+                String location = rs.getString("EventLocation");
+                System.out.println("- event_location: " + location);
+                event.setEventLocation(location);
+                
+                String description = rs.getString("EventDescription");
+                System.out.println("- event_description: " + (description != null ? description.substring(0, Math.min(50, description.length())) + "..." : "null"));
+                event.setEventDescription(description);
+                
+                int volunteersNeeded = rs.getInt("VolunteersNeeded");
+                System.out.println("- volunteers_needed: " + volunteersNeeded);
+                event.setVolunteersNeeded(volunteersNeeded);
+                
+                // Optional fields with null checks
+                try {
+                    int volunteersApplied = rs.getInt("VolunteersApplied");
+                    System.out.println("- volunteers_applied: " + volunteersApplied);
+                    event.setVolunteersApplied(volunteersApplied);
+                } catch (SQLException e) {
+                    System.out.println("- volunteers_applied column not found or error: " + e.getMessage());
+                    event.setVolunteersApplied(0);
+                }
+                
+                try {
+                    int volunteersApproved = rs.getInt("VolunteersApproved");
+                    System.out.println("- volunteers_approved: " + volunteersApproved);
+                    event.setVolunteersApproved(volunteersApproved);
+                } catch (SQLException e) {
+                    System.out.println("- volunteers_approved column not found or error: " + e.getMessage());
+                    event.setVolunteersApproved(0);
+                }
+                
+                // Handle optional time fields
+                try {
+                    Time startTime = rs.getTime("StartTime");
+                    System.out.println("- start_time: " + startTime);
+                    if (startTime != null) {
+                        event.setStartTime(startTime.toLocalTime());
+                    }
+                } catch (SQLException e) {
+                    System.out.println("- start_time column issue: " + e.getMessage());
+                }
+                
+                try {
+                    Time endTime = rs.getTime("EndTime");
+                    System.out.println("- end_time: " + endTime);
+                    if (endTime != null) {
+                        event.setEndTime(endTime.toLocalTime());
+                    }
+                } catch (SQLException e) {
+                    System.out.println("- end_time column issue: " + e.getMessage());
+                }
+                
+                try {
+                    String category = rs.getString("EventCategory");
+                    System.out.println("- event_category: " + category);
+                    event.setEventCategory(category);
+                } catch (SQLException e) {
+                    System.out.println("- event_category column issue: " + e.getMessage());
+                }
+                
+                try {
+                    String status = rs.getString("EventStatus");
+                    System.out.println("- event_status: " + status);
+                    event.setEventStatus(status);
+                } catch (SQLException e) {
+                    System.out.println("- event_status column issue: " + e.getMessage());
+                }
+                
+                try {
+                    int createdBy = rs.getInt("CreatedByUserID");
+                    System.out.println("- created_by_user_id: " + createdBy);
+                    event.setCreatedByUserId(createdBy);
+                } catch (SQLException e) {
+                    System.out.println("- created_by_user_id column issue: " + e.getMessage());
+                }
+                
+                try {
+                    int lastModifiedBy = rs.getInt("LastModifiedByUserID");
+                    System.out.println("- last_modified_by_user_id: " + lastModifiedBy);
+                    event.setLastModifiedByUserId(lastModifiedBy);
+                } catch (SQLException e) {
+                    System.out.println("- last_modified_by_user_id column issue: " + e.getMessage());
+                }
+                
+                try {
+                    Timestamp dateCreated = rs.getTimestamp("DateCreated");
+                    System.out.println("- date_created: " + dateCreated);
+                    if (dateCreated != null) {
+                        event.setDateCreated(dateCreated.toLocalDateTime());
+                    }
+                } catch (SQLException e) {
+                    System.out.println("- date_created column issue: " + e.getMessage());
+                }
+                
+                System.out.println("Event object created successfully!");
+                System.out.println("=== End getEventById Debug ===");
+                return event;
+            } else {
+                System.out.println("No event found with ID: " + eventId);
+                System.out.println("=== End getEventById Debug ===");
             }
             
         } catch (SQLException | ClassNotFoundException e) {
@@ -119,7 +249,7 @@ public class EventDAO {
     
     public List<Event> getAllEvents() {
         List<Event> events = new ArrayList<>();
-        String sql = "SELECT * FROM events ORDER BY EventDate DESC";
+        String sql = "SELECT * FROM event ORDER BY EventDate DESC";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -137,7 +267,7 @@ public class EventDAO {
     }
     
     public boolean deleteEvent(int eventId) {
-        String sql = "DELETE FROM events WHERE EventID = ?";
+        String sql = "DELETE FROM event WHERE EventID = ?";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -201,4 +331,30 @@ public class EventDAO {
         
         return event;
     }
+    
+    public boolean eventExists(int eventId) {
+        String sql = "SELECT COUNT(*) FROM event WHERE EventID = ?";
+        System.out.println("Checking if event exists with ID: " + eventId);
+        
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, eventId);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                System.out.println("Event count for ID " + eventId + ": " + count);
+                return count > 0;
+            }
+            
+        } catch (SQLException | ClassNotFoundException e) {
+            System.out.println("Error checking if event exists: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
+    
+    
 }

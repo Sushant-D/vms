@@ -141,7 +141,7 @@
         <div class="event-management">
             <div class="event-header">
                 <div class="event-title">Event Management</div>
-                <button class="add-event-btn">+ Add New Event</button>
+                <button class="add-event-btn"><a href="<%= request.getContextPath() %>/add-event">+ Add New Event</a></button>
             </div>
             
             <table class="event-table">

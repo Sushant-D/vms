@@ -1,4 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    // Get event from request attribute
+    com.islington.model.Event event = (com.islington.model.Event) request.getAttribute("event");
+%>
 
 <!DOCTYPE html>
 <html>
@@ -100,24 +104,27 @@ textarea.form-control {
             <h1>${empty event ? 'Add New Event' : 'Edit Event'}</h1>
         </div>
 
-        <c:if test="${not empty errorMessage}">
-            <div class="error-message">${errorMessage}</div>
-        </c:if>
+        <!-- Debug information -->
+        <div style="background-color: #f8f9fa; padding: 10px; margin-bottom: 20px; border-radius: 4px;">
+            <strong>Debug Info:</strong><br>
+            Event object: <%= event != null ? "Present" : "Not present" %><br>
+            <% if (event != null) { %>
+                Event ID: <%= event.getEventId() %><br>
+                Event Name: <%= event.getEventName() %><br>
+                Event Date: <%= event.getEventDate() %><br>
+            <% } %>
+        </div>
 
-        <c:if test="${not empty successMessage}">
-            <div class="success-message">${successMessage}</div>
-        </c:if>
-
-        <form action="saveEvent" method="post">
-            <!-- Hidden field for event ID when editing -->
-            <c:if test="${not empty event}">
-                <input type="hidden" name="eventId" value="${event.eventId}">
-            </c:if>
+        <form action="${pageContext.request.contextPath}/saveEvent" method="post">
+            <!-- Hidden field for event ID (only present during edit) -->
+            <% if (event != null) { %>
+                <input type="hidden" name="eventId" value="<%= event.getEventId() %>">
+            <% } %>
 
             <div class="form-group">
                 <label for="eventName">Event Name <span class="required">*</span></label>
                 <input type="text" id="eventName" name="eventName" class="form-control"
-                       value="${event.eventName}" required maxlength="100">
+                       value="<%= event != null ? event.getEventName() : "" %>" required maxlength="100">
             </div>
 
             <div class="form-row">
@@ -125,7 +132,7 @@ textarea.form-control {
                     <div class="form-group">
                         <label for="eventDate">Event Date <span class="required">*</span></label>
                         <input type="date" id="eventDate" name="eventDate" class="form-control"
-                               value="${event.eventDate}" required>
+                               value="${event != null ? event.eventDate : ''}" required>
                     </div>
                 </div>
 
@@ -133,7 +140,7 @@ textarea.form-control {
                     <div class="form-group">
                         <label for="volunteersNeeded">Volunteers Needed <span class="required">*</span></label>
                         <input type="number" id="volunteersNeeded" name="volunteersNeeded"
-                               class="form-control" min="1" value="${event.volunteersNeeded}" required>
+                               class="form-control" min="1" value="${event != null ? event.volunteersNeeded : ''}" required>
                     </div>
                 </div>
             </div>
@@ -141,7 +148,7 @@ textarea.form-control {
             <div class="form-group">
                 <label for="location">Event Location <span class="required">*</span></label>
                 <input type="text" id="location" name="location" class="form-control"
-                       value="${event.eventLocation}" required maxlength="255">
+                       value="${event != null ? event.eventLocation : ''}" required maxlength="255">
             </div>
 
             <div class="form-row">
@@ -149,7 +156,7 @@ textarea.form-control {
                     <div class="form-group">
                         <label for="startTime">Start Time</label>
                         <input type="time" id="startTime" name="startTime" class="form-control"
-                               value="${event.startTime}">
+                               value="${event != null ? event.startTime : ''}">
                     </div>
                 </div>
 
@@ -157,7 +164,7 @@ textarea.form-control {
                     <div class="form-group">
                         <label for="endTime">End Time</label>
                         <input type="time" id="endTime" name="endTime" class="form-control"
-                               value="${event.endTime}">
+                               value="${event != null ? event.endTime : ''}">
                     </div>
                 </div>
             </div>
@@ -168,13 +175,13 @@ textarea.form-control {
                         <label for="eventCategory">Event Category</label>
                         <select id="eventCategory" name="eventCategory" class="form-control">
                             <option value="">Select Category</option>
-                            <option value="Environment" ${event.eventCategory == 'Environment' ? 'selected' : ''}>Environment</option>
-                            <option value="Education" ${event.eventCategory == 'Education' ? 'selected' : ''}>Education</option>
-                            <option value="Health" ${event.eventCategory == 'Health' ? 'selected' : ''}>Health</option>
-                            <option value="Community" ${event.eventCategory == 'Community' ? 'selected' : ''}>Community</option>
-                            <option value="Social Services" ${event.eventCategory == 'Social Services' ? 'selected' : ''}>Social Services</option>
-                            <option value="Sports" ${event.eventCategory == 'Sports' ? 'selected' : ''}>Sports</option>
-                            <option value="Other" ${event.eventCategory == 'Other' ? 'selected' : ''}>Other</option>
+                            <option value="Environment" ${event != null && event.eventCategory == 'Environment' ? 'selected' : ''}>Environment</option>
+                            <option value="Education" ${event != null && event.eventCategory == 'Education' ? 'selected' : ''}>Education</option>
+                            <option value="Health" ${event != null && event.eventCategory == 'Health' ? 'selected' : ''}>Health</option>
+                            <option value="Community" ${event != null && event.eventCategory == 'Community' ? 'selected' : ''}>Community</option>
+                            <option value="Social Services" ${event != null && event.eventCategory == 'Social Services' ? 'selected' : ''}>Social Services</option>
+                            <option value="Sports" ${event != null && event.eventCategory == 'Sports' ? 'selected' : ''}>Sports</option>
+                            <option value="Other" ${event != null && event.eventCategory == 'Other' ? 'selected' : ''}>Other</option>
                         </select>
                     </div>
                 </div>
@@ -183,10 +190,10 @@ textarea.form-control {
                     <div class="form-group">
                         <label for="eventStatus">Event Status</label>
                         <select id="eventStatus" name="eventStatus" class="form-control">
-                            <option value="upcoming" ${empty event.eventStatus || event.eventStatus == 'upcoming' ? 'selected' : ''}>Upcoming</option>
-                            <option value="ongoing" ${event.eventStatus == 'ongoing' ? 'selected' : ''}>Ongoing</option>
-                            <option value="completed" ${event.eventStatus == 'completed' ? 'selected' : ''}>Completed</option>
-                            <option value="cancelled" ${event.eventStatus == 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                            <option value="upcoming" ${empty event || empty event.eventStatus || event.eventStatus == 'upcoming' ? 'selected' : ''}>Upcoming</option>
+                            <option value="ongoing" ${event != null && event.eventStatus == 'ongoing' ? 'selected' : ''}>Ongoing</option>
+                            <option value="completed" ${event != null && event.eventStatus == 'completed' ? 'selected' : ''}>Completed</option>
+                            <option value="cancelled" ${event != null && event.eventStatus == 'cancelled' ? 'selected' : ''}>Cancelled</option>
                         </select>
                     </div>
                 </div>
@@ -195,7 +202,7 @@ textarea.form-control {
             <div class="form-group">
                 <label for="description">Event Description <span class="required">*</span></label>
                 <textarea id="description" name="description" class="form-control"
-                          required maxlength="1000" placeholder="Describe the event, its purpose, and what volunteers will be doing...">${event.eventDescription}</textarea>
+                          required maxlength="1000" placeholder="Describe the event, its purpose, and what volunteers will be doing...">${event != null ? event.eventDescription : ''}</textarea>
             </div>
 
             <div class="button-group">
@@ -203,7 +210,7 @@ textarea.form-control {
                     ${empty event ? 'Create Event' : 'Update Event'}
                 </button>
                 <button type="button" class="btn btn-secondary"
-                        onclick="window.location.href='adminDashboard.jsp'">Cancel</button>
+                        onclick="window.location.href='${pageContext.request.contextPath}/admin-dashboard'">Cancel</button>
             </div>
         </form>
     </div>

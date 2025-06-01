@@ -28,7 +28,7 @@ public class EventService {
             
             while (rs.next()) {
                 Event event = extractEventFromResultSet(rs);
-                event.setVolunteersAssigned(rs.getInt("assigned_volunteers"));
+//                event.setVolunteersAssigned(rs.getInt("assigned_volunteers"));
                 events.add(event);
             }
         } catch (SQLException e) {
@@ -54,7 +54,7 @@ public class EventService {
             
             if (rs.next()) {
                 event = extractEventFromResultSet(rs);
-                event.setVolunteersAssigned(rs.getInt("assigned_volunteers"));
+//                event.setVolunteersAssigned(rs.getInt("assigned_volunteers"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -72,9 +72,9 @@ public class EventService {
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
             pstmt.setString(1, event.getEventName());
-            pstmt.setDate(2, event.getEventDate());
-            pstmt.setString(3, event.getLocation());
-            pstmt.setString(4, event.getDescription());
+//            pstmt.setDate(2, event.getEventDate());
+//            pstmt.setString(3, event.getLocation());
+//            pstmt.setString(4, event.getDescription());
             pstmt.setInt(5, event.getVolunteersNeeded());
             
             int affectedRows = pstmt.executeUpdate();
@@ -102,9 +102,9 @@ public class EventService {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, event.getEventName());
-            pstmt.setDate(2, event.getEventDate());
-            pstmt.setString(3, event.getLocation());
-            pstmt.setString(4, event.getDescription());
+//            pstmt.setDate(2, event.getEventDate());
+//            pstmt.setString(3, event.getLocation());
+//            pstmt.setString(4, event.getDescription());
             pstmt.setInt(5, event.getVolunteersNeeded());
             pstmt.setInt(6, event.getEventId());
             
@@ -178,9 +178,9 @@ public class EventService {
         Event event = new Event();
         event.setEventId(rs.getInt("EventID"));
         event.setEventName(rs.getString("EventName"));
-        event.setEventDate(rs.getDate("EventDate"));
-        event.setLocation(rs.getString("Location"));
-        event.setDescription(rs.getString("Description"));
+//        event.setEventDate(rs.getDate("EventDate"));
+//        event.setLocation(rs.getString("Location"));
+//        event.setDescription(rs.getString("Description"));
         event.setVolunteersNeeded(rs.getInt("VolunteersNeeded"));
         return event;
     }
