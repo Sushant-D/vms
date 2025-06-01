@@ -57,7 +57,7 @@
             </div>
         <% } %>
         
-        <form action="loginRegister" method="post" id="loginForm" onsubmit="return validateForm()">
+        <form action="${pageContext.request.contextPath}/loginRegister" method="post" id="loginForm" onsubmit="return validateForm()">
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required onblur="validateEmail()">
