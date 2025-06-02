@@ -763,7 +763,7 @@
         const item = question.parentNode;
         item.classList.toggle('active');
         
-        // Update the + / - icon
+        
         const sign = question.querySelector('span:last-child');
         sign.textContent = item.classList.contains('active') ? '-' : '+';
       });
