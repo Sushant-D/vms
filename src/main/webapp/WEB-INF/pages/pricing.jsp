@@ -714,7 +714,7 @@
     </div>
   </section>
 
-  <!-- Footer -->
+
   <footer>
     <div class="container">
       <div class="footer-content">
@@ -757,7 +757,7 @@
   </footer>
 
   <script>
-    // Toggle FAQ items
+    
     document.querySelectorAll('.faq-question').forEach(question => {
       question.addEventListener('click', () => {
         const item = question.parentNode;
