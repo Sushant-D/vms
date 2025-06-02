@@ -776,7 +776,7 @@
     
     billingToggle.addEventListener('change', () => {
       if (billingToggle.checked) {
-        // Annual pricing (20% discount)
+        
         prices.forEach((price, index) => {
           const annualPrice = Math.round(originalPrices[index] * 0.8);
           price.textContent = '$' + annualPrice;
@@ -785,7 +785,7 @@
           period.textContent = '/month (billed annually)';
         });
       } else {
-        // Monthly pricing
+        
         prices.forEach((price, index) => {
           price.textContent = '$' + originalPrices[index];
         });
