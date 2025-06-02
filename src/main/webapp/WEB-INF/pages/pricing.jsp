@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VoluniFy - Pricing</title>
   <style>
-    /* Base Styles */
+   
     * {
       margin: 0;
       padding: 0;
@@ -26,7 +26,7 @@
       padding: 0 20px;
     }
     
-    /* Header */
+  
     header {
       background-color: #fff;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -769,7 +769,7 @@
       });
     });
     
-    // Toggle between monthly and annual pricing
+   
     const billingToggle = document.getElementById('billing-toggle');
     const prices = document.querySelectorAll('.price');
     const originalPrices = Array.from(prices).map(price => price.textContent.replace('$', ''));
