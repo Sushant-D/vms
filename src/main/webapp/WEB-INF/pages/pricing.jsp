@@ -691,7 +691,7 @@
     </div>
   </section>
 
-  <!-- Guarantee Section -->
+ 
   <section class="guarantee">
     <div class="container">
       <div class="guarantee-content">
@@ -702,7 +702,7 @@
     </div>
   </section>
 
-  <!-- CTA Section -->
+ 
   <section class="cta">
     <div class="container">
       <h2>Ready to Transform Your Volunteer Program?</h2>
