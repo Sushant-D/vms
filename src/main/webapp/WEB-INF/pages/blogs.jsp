@@ -460,7 +460,7 @@
     </div>
   </header>
 
-  <!-- Blog Header -->
+
   <section class="blog-header">
     <div class="container">
       <h1>VoluniFy Blog</h1>
@@ -468,7 +468,7 @@
     </div>
   </section>
 
-  <!-- Blog Categories -->
+
   <section class="blog-features">
     <div class="container">
       <div class="blog-categories">
@@ -481,7 +481,7 @@
         <div class="category-tag">Success Stories</div>
       </div>
       
-      <!-- Featured Post -->
+     
       <div class="featured-post">
         <div class="featured-image">
           <img src="/api/placeholder/600/400" alt="Featured Blog Post">
@@ -498,9 +498,9 @@
         </div>
       </div>
       
-      <!-- Blog Posts Grid -->
+    
       <div class="blog-grid">
-        <!-- Blog Card 1 -->
+       
         <div class="blog-card">
           <div class="blog-card-image">
             <img src="/api/placeholder/400/200" alt="Blog Post">
