@@ -517,7 +517,7 @@
     </div>
   </section>
 
-  <!-- FAQ Section -->
+ 
   <section class="faq-section">
     <div class="container">
       <h2>Frequently Asked Questions</h2>
