@@ -516,7 +516,7 @@
           </div>
         </div>
         
-        <!-- Blog Card 2 -->
+        
         <div class="blog-card">
           <div class="blog-card-image">
             <img src="/api/placeholder/400/200" alt="Blog Post">
@@ -532,7 +532,7 @@
           </div>
         </div>
         
-        <!-- Blog Card 3 -->
+        
         <div class="blog-card">
           <div class="blog-card-image">
             <img src="/api/placeholder/400/200" alt="Blog Post">
@@ -548,7 +548,7 @@
           </div>
         </div>
         
-        <!-- Blog Card 4 -->
+       
         <div class="blog-card">
           <div class="blog-card-image">
             <img src="/api/placeholder/400/200" alt="Blog Post">
