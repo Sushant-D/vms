@@ -546,7 +546,7 @@
     </div>
   </section>
 
-  <!-- Office Locations -->
+
   <section class="locations-section">
     <div class="container">
       <h2>Our Offices</h2>
@@ -573,7 +573,7 @@
     </div>
   </section>
 
-  <!-- Footer -->
+ 
   <footer>
     <div class="container">
       <div class="footer-content">
